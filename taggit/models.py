@@ -51,6 +51,15 @@ class TagBase(models.Model):
             slug += "_%d" % i
         return slug
 
+    @classmethod
+    def get_for(cls, queryset):
+        """
+        Returns a list of tags used in the given queryset.
+        TODO: make it support models
+        """
+        ct = ContentType.objects.get_for_model(queryset.model)
+        return cls.objects.filter(pk__in = TaggedItem.objects.filter(content_type = ct, object_id__in = queryset).values_list('tag', flat = True).distinct())
+
 
 class Tag(TagBase):
     class Meta:
